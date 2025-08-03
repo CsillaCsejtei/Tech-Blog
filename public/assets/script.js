@@ -78,15 +78,23 @@ function fetchPosts() {
       postsContainer.innerHTML = "";
       posts.forEach((post) => {
         const div = document.createElement("div");
-        div.innerHTML = `<h3>${post.title}</h3><p>${
-          post.content
-        }</p><small>By: ${post.postedBy} on ${new Date(
+        div.innerHTML = `
+          <h3>${post.title}</h3>
+          <p>${post.content}</p>
+          <small>By: ${post.postedBy} on ${new Date(
           post.createdOn
-        ).toLocaleString()}</small>`;
+        ).toLocaleString()}</small>
+          <br>
+          <button onclick="editPost(${post.id}, \`${post.title}\`, \`${
+          post.content
+        }\`)">Edit</button>
+          <button onclick="deletePost(${post.id})">Delete</button>
+        `;
         postsContainer.appendChild(div);
       });
     });
 }
+
 
 function createPost() {
   const title = document.getElementById("post-title").value;
@@ -104,4 +112,43 @@ function createPost() {
       alert("Post created successfully");
       fetchPosts();
     });
+}
+
+function editPost(id, oldTitle, oldContent) {
+  const title = prompt("Update title:", oldTitle);
+  const content = prompt("Update content:", oldContent);
+
+  if (title && content) {
+    fetch(`http://localhost:3010/api/posts/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ title, content }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Post updated successfully");
+        fetchPosts();
+      })
+      .catch((err) => console.error(err));
+  }
+}
+
+function deletePost(id) {
+  if (confirm("Are you sure you want to delete this post?")) {
+    fetch(`http://localhost:3010/api/posts/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Post deleted successfully");
+        fetchPosts();
+      })
+      .catch((err) => console.error(err));
+  }
 }
