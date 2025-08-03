@@ -1,15 +1,16 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: rgb(202, 238, 250);
     text-align: center;
     margin: 0;
-    padding: 20px;
+    padding: 40px 20px;
+    color: #333;
 }
 
 .container {
-    max-width: 400px;
+    max-width: 420px;
     margin: auto;
-    background: white;
+    background: rgb(251, 251, 220);
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -35,7 +36,7 @@ textarea {
 
 input[type="submit"] {
     border: none;
-    background: #4aaaa5;
+    background: #adf6f2;
     padding: 12px 20px;
     border-radius: 4px;
     cursor: pointer;
