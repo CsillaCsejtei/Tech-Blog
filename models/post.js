@@ -18,10 +18,7 @@ Post.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    category:{
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+
     createdOn: {
       type: DataTypes.DATE,
       allowNull: false,
