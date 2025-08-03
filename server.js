@@ -29,5 +29,7 @@ app.use(routes);
 
 // Sync database
 sequelize.sync({ force: rebuild }).then(() => {
-  app.listen(PORT, () => console.log("Now listening"));
+  app.listen(PORT, () => console.log(`Server is running at http://localhost:${PORT}`));
+}).catch((err) => {
+  console.error("Failed to sync database or start server:", err);
 });
