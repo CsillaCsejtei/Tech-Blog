@@ -42,9 +42,9 @@ app.get("/:id", async (req, res) => {
 // Route to update a post
 app.put("/:id", async (req, res) => {
   try {
-    const { title, content, postedBy } = req.body;
+    const { title, content, postedBy, category } = req.body;
     const post = await Post.update(
-      { title, content, postedBy },
+      { title, content, postedBy, category },
       { where: { id: req.params.id } }
     );
     res.json(post);
