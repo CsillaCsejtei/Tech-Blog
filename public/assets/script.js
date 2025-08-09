@@ -39,7 +39,7 @@ function login() {
 
         alert("User Logged In successfully");
 
-        // Fetch the posts list
+        loadCategories();
         fetchPosts();
 
         // Hide the auth container and show the app container as we're now logged in
@@ -73,17 +73,29 @@ function fetchPosts() {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((res) => res.json())
-    .then((posts) => {
+    .then((data) => {
+      console.log("Response from /api/posts:", data);
+
+      const posts = Array.isArray(data) ? data : data.posts;
+
+      if (!Array.isArray(posts)) {
+        console.error("Expected posts to be an array, got:", posts);
+        return;
+      }
+
       const postsContainer = document.getElementById("posts");
       postsContainer.innerHTML = "";
+
       posts.forEach((post) => {
         const div = document.createElement("div");
         div.innerHTML = `
           <h3>${post.title}</h3>
           <p>${post.content}</p>
-          <small>By: ${post.postedBy} on ${new Date(
-          post.createdOn
-        ).toLocaleString()}</small>
+          <small>
+            By: ${post.postedBy}
+            | Category: ${post.category?.category_name || "N/A"}
+            | Posted on: ${new Date(post.createdOn).toLocaleString()}
+          </small>
           <br>
           <button onclick="editPost(${post.id}, \`${post.title}\`, \`${
           post.content
@@ -92,24 +104,29 @@ function fetchPosts() {
         `;
         postsContainer.appendChild(div);
       });
-    });
+    })
+    .catch((err) => console.error("Error loading posts:", err));
 }
-
 
 function createPost() {
   const title = document.getElementById("post-title").value;
   const content = document.getElementById("post-content").value;
+  const categoryId = document.getElementById("categorySelect").value;
+
   fetch("http://localhost:3010/api/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title, content, postedBy: "User" }),
+    body: JSON.stringify({ title, content, categoryId, postedBy: "User" }),
   })
     .then((res) => res.json())
     .then(() => {
       alert("Post created successfully");
+      document.getElementById("post-title").value = "";
+      document.getElementById("post-content").value = "";
+
       fetchPosts();
     });
 }
@@ -151,4 +168,69 @@ function deletePost(id) {
       })
       .catch((err) => console.error(err));
   }
+}
+
+async function loadCategories() {
+  try {
+    const response = await fetch("http://localhost:3010/api/categories", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const categories = await response.json();
+
+    const select = document.getElementById("categorySelect");
+    const filter = document.getElementById("filterCategory");
+    select.innerHTML = "";
+    filter.innerHTML = '<option value="all">All Categories</option>';
+
+    categories.forEach((category) => {
+      const option1 = document.createElement("option");
+      option1.value = category.id;
+      option1.textContent = category.category_name;
+      select.appendChild(option1);
+
+      const option2 = document.createElement("option");
+      option2.value = category.id;
+      option2.textContent = category.category_name;
+      filter.appendChild(option2);
+    });
+  } catch (error) {
+    console.error("Failed to load categories", error);
+  }
+}
+function filterPosts() {
+  const selectedCategory = document.getElementById("filterCategory").value;
+
+  fetch("http://localhost:3010/api/posts", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => res.json())
+    .then((posts) => {
+      const postsContainer = document.getElementById("posts");
+      postsContainer.innerHTML = "";
+      const filtered =
+        selectedCategory === "all"
+          ? posts
+          : posts.filter((post) => post.categoryId == selectedCategory);
+
+      filtered.forEach((post) => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <h3>${post.title}</h3>
+          <p><strong>Category:</strong> ${
+            post.category?.category_name || "Unknown"
+          }</p>
+          <p>${post.content}</p>
+          <small>By: ${post.postedBy} on ${new Date(
+          post.createdOn
+        ).toLocaleString()}</small>
+          <br>
+          <button onclick="editPost(${post.id}, \`${post.title}\`, \`${
+          post.content
+        }\`)">Edit</button>
+          <button onclick="deletePost(${post.id})">Delete</button>
+        `;
+        postsContainer.appendChild(div);
+      });
+    });
 }
