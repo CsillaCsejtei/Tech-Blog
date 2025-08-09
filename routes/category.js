@@ -1,10 +1,7 @@
-// create a new router
 const app = require("express").Router();
 
-// import the models
 const { Category } = require("../models/index");
 
-// Route to add a new post
 app.post("/", async (req, res) => {
   try {
     const { category_name } = req.body;
@@ -16,7 +13,6 @@ app.post("/", async (req, res) => {
   }
 });
 
-// Route to get all posts
 app.get("/", async (req, res) => {
   try {
     console.log("Getting all categories");
@@ -30,14 +26,13 @@ app.get("/", async (req, res) => {
 
 app.get("/:id", async (req, res) => {
   try {
-    const category = await Post.findByPk(req.params.id);
+    const category = await Category.findByPk(req.params.id);
     res.json(category);
   } catch (error) {
     res.status(500).json({ error: "Error retrieving category" });
   }
 });
 
-// Route to update a category
 app.put("/:id", async (req, res) => {
   try {
     const { name } = req.body;
@@ -51,7 +46,6 @@ app.put("/:id", async (req, res) => {
   }
 });
 
-// Route to delete a category
 app.delete("//:id", async (req, res) => {
   try {
     const category = await Category.destroy({ where: { id: req.params.id } });
@@ -61,5 +55,4 @@ app.delete("//:id", async (req, res) => {
   }
 });
 
-// export the router
 module.exports = app;
