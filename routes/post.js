@@ -1,14 +1,11 @@
-// create a new router
 const app = require("express").Router();
 
-// import the models
-const { Post } = require("../models/index");
+const { Post, Category } = require("../models/index");
 
-// Route to add a new post
 app.post("/", async (req, res) => {
   try {
-    const { title, content, postedBy } = req.body;
-    const post = await Post.create({ title, content, postedBy });
+    const { title, content, postedBy, categoryId} = req.body;
+    const post = await Post.create({ title, content, postedBy, categoryId});
 
     res.status(201).json(post);
   } catch (error) {
@@ -16,15 +13,23 @@ app.post("/", async (req, res) => {
   }
 });
 
-// Route to get all posts
 app.get("/", async (req, res) => {
   try {
-    const posts = await Post.findAll();
-    res.json(posts);
+    const posts = await Post.findAll({
+      include: [
+        { model: Category, attributes: ["category_name"], as: "category" },
+      ],
+    });
+
+    const plainPosts = posts.map((post) => post.get({ plain: true }));
+
+    res.json(plainPosts); 
   } catch (error) {
     res.status(500).json({ error: "Error retrieving posts", error });
   }
 });
+
+
 
 app.get("/:id", async (req, res) => {
   try {
@@ -35,12 +40,29 @@ app.get("/:id", async (req, res) => {
   }
 });
 
-// Route to update a post
+app.get("/category/:categoryName", async (req, res) => {
+  try {
+    const category = await Category.findOne({
+      where: { category_name: req.params.categoryName },
+      include: [{ model: Post, as: "posts" }],
+    });
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.json(category.posts);
+  } catch (error) {
+    res.status(500).json({ error: "Error retrieving posts by category" });
+  }
+});
+
+
 app.put("/:id", async (req, res) => {
   try {
-    const { title, content, postedBy} = req.body;
+    const { title, content, postedBy, categoryId} = req.body;
     const post = await Post.update(
-      { title, content, postedBy},
+      { title, content, postedBy, categoryId},
       { where: { id: req.params.id } }
     );
     res.json(post);
@@ -49,7 +71,7 @@ app.put("/:id", async (req, res) => {
   }
 });
 
-// Route to delete a post
+
 app.delete("/:id", async (req, res) => {
   try {
     const post = await Post.destroy({ where: { id: req.params.id } });
@@ -59,5 +81,4 @@ app.delete("/:id", async (req, res) => {
   }
 });
 
-// export the router
 module.exports = app;
