@@ -4,7 +4,7 @@ function register() {
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  fetch("http://localhost:3010/api/users", {
+  fetch("https://tech-blog-8ynl.onrender.com/api/users", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, email, password }),
@@ -25,7 +25,7 @@ function register() {
 function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
-  fetch("http://localhost:3010/api/users/login", {
+  fetch("https://tech-blog-8ynl.onrender.com/api/users/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -55,7 +55,7 @@ function login() {
 }
 
 function logout() {
-  fetch("http://localhost:3010/api/users/logout", {
+  fetch("https://tech-blog-8ynl.onrender.com/api/users/logout", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   }).then(() => {
@@ -68,7 +68,7 @@ function logout() {
 }
 
 function fetchPosts() {
-  fetch("http://localhost:3010/api/posts", {
+  fetch("https://tech-blog-8ynl.onrender.com/api/posts", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -113,7 +113,7 @@ function createPost() {
   const content = document.getElementById("post-content").value;
   const categoryId = document.getElementById("categorySelect").value;
 
-  fetch("http://localhost:3010/api/posts", {
+  fetch("https://tech-blog-8ynl.onrender.com/api/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -136,7 +136,7 @@ function editPost(id, oldTitle, oldContent) {
   const content = prompt("Update content:", oldContent);
 
   if (title && content) {
-    fetch(`http://localhost:3010/api/posts/${id}`, {
+    fetch(`https://tech-blog-8ynl.onrender.com/api/posts/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -155,7 +155,7 @@ function editPost(id, oldTitle, oldContent) {
 
 function deletePost(id) {
   if (confirm("Are you sure you want to delete this post?")) {
-    fetch(`http://localhost:3010/api/posts/${id}`, {
+    fetch(`https://tech-blog-8ynl.onrender.com/api/posts/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -172,9 +172,12 @@ function deletePost(id) {
 
 async function loadCategories() {
   try {
-    const response = await fetch("http://localhost:3010/api/categories", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      "https://tech-blog-8ynl.onrender.com/api/categories",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     const categories = await response.json();
 
     const select = document.getElementById("categorySelect");
@@ -200,7 +203,7 @@ async function loadCategories() {
 function filterPosts() {
   const selectedCategory = document.getElementById("filterCategory").value;
 
-  fetch("http://localhost:3010/api/posts", {
+  fetch("https://tech-blog-8ynl.onrender.com/api/posts", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   })
