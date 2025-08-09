@@ -14,8 +14,17 @@ Post.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+
     postedBy: {
       type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "category", 
+        key: "id",
+      },
       allowNull: false,
     },
 
@@ -34,5 +43,4 @@ Post.init(
   }
 );
 
-// Export Post model
 module.exports = Post;
