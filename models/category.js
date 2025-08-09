@@ -20,5 +20,4 @@ Category.init(
   }
 );
 
-// Export Post model
 module.exports = Category;
